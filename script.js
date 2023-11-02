@@ -201,3 +201,4 @@ leftButton.onclick = () => changeDirection(LEFT_DIR);
 rightButton.onclick = () => changeDirection(RIGHT_DIR);
 upButton.onclick = () => changeDirection(UP_DIR);
 downButton.onclick = () => changeDirection(DOWN_DIR);
+cy.get('.snakeBodyPixel').should('have.length', 1);
