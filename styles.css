@@ -1,20 +1,42 @@
-/* Your CSS Code here. */
 #gameContainer {
-	width: 400px;
-	height: 400px;
-	display: grid;
-/* 	background-color: black; */
-	grid-template-columns: repeat(40, 1fr);
-	gap: 1px;
-	border:1px solid black;
+  width: 400px;
+  height: 400px;
+  display: grid;
+  grid-template-columns: repeat(40, 1fr);
+  gap: 1px;
+  border: 1px solid #ccc;
 }
-.food{
-	background-color: red;
+
+.pixel {
+  width: 10px;
+  height: 10px;
+  background-color: #e0e0e0;
 }
+
+.food {
+  background-color: #ff6347;
+}
+
 .snakeBodyPixel {
-    background-color: green;
+  background-color: #32cd32;
 }
 
 .scoreBoard {
-    margin-top: 10px;
+  margin-top: 10px;
+  font-family: 'Arial', sans-serif;
+  font-size: 18px;
+}
+
+/* Optional styling for the snake's head */
+#pixel1 {
+  background-color: #008000;
+}
+
+/* Optional styling for a more circular appearance */
+.food {
+  border-radius: 50%;
+}
+
+.snakeBodyPixel {
+  border-radius: 50%;
 }
