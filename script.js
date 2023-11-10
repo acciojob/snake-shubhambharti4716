@@ -114,3 +114,51 @@ function resetGame() {
 generateFood();
 renderGame();
 setInterval(moveSnake, snakeSpeed);
+
+function waitForElement(selector, timeout = 10000) {
+  return new Promise((resolve, reject) => {
+    const startTime = Date.now();
+
+    function checkElement() {
+      const element = document.querySelector(selector);
+
+      if (element) {
+        resolve(element);
+      } else if (Date.now() - startTime > timeout) {
+        reject(new Error(`Timeout waiting for element with selector: ${selector}`));
+      } else {
+        setTimeout(checkElement, 100);
+      }
+    }
+
+    checkElement();
+  });
+}
+
+
+waitForElement('#pointsEarned')
+  .then((element) => {
+    // The element is found, now make an assertion
+    const pointsEarned = element.textContent;
+    if (pointsEarned === '0') {
+      console.log('Assertion passed: pointsEarned contains "0"');
+    } else {
+      console.error('Assertion failed: pointsEarned does not contain "0"');
+    }
+  })
+  .catch((error) => {
+    console.error(error.message);
+    // Handle the error (e.g., show an error message or fail the test)
+  });
+
+setTimeout(() => {
+  // Make the assertion after waiting for 5 seconds
+  const snakeBodyPixels = document.querySelectorAll('.snakeBodyPixel');
+  const snakeLength = snakeBodyPixels.length;
+
+  if (snakeLength === 2) {
+    console.log('Assertion passed: There are 2 snake body pixels.');
+  } else {
+    console.error(`Assertion failed: Found ${snakeLength} snake body pixels, expected 2.`);
+  }
+}, 5000);
