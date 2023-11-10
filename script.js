@@ -1,133 +1,118 @@
 //your code here
-document.addEventListener("DOMContentLoaded", () => {
-  const gameContainer = document.getElementById("gameContainer");
-  const scoreElement = document.getElementById("score");
+const gameContainer = document.getElementById("gameContainer");
+    const scoreElement = document.getElementById("score");
 
-  const gridSize = 40;
-  const initialSnakeSpeed = 100; // in ms
-  const initialSnakePosition = { row: 20, col: 1 };
-  const initialDirection = "right";
+    const gridSize = 40;
+    const pixelSize = 10;
+    const snakeSpeed = 100; // milliseconds
+    let snakeDirection = "up";
+    let snake = [{ row: 20, col: 1 }];
+    let food = { row: 0, col: 0 };
+    let score = 0;
 
-  let snake = [initialSnakePosition];
-  let direction = initialDirection;
-  let foodPosition = generateRandomPosition();
-  let score = 0;
-  let snakeSpeed = initialSnakeSpeed;
-  let gameInterval;
-
-  // Initialize the game grid
-  for (let i = 0; i < gridSize * gridSize; i++) {
-    const pixel = document.createElement("div");
-    pixel.className = "pixel";
-    gameContainer.appendChild(pixel);
-  }
-
-  // Helper function to generate a random position
-  function generateRandomPosition() {
-    const row = Math.floor(Math.random() * gridSize) + 1;
-    const col = Math.floor(Math.random() * gridSize) + 1;
-    return { row, col };
-  }
-
-  // Helper function to check if two positions are the same
-  function positionsAreEqual(pos1, pos2) {
-    return pos1.row === pos2.row && pos1.col === pos2.col;
-  }
-
-  // Update the game grid
-  function updateGrid() {
-    // Clear the grid
-    const pixels = document.querySelectorAll(".pixel");
-    pixels.forEach((pixel) => (pixel.className = "pixel"));
-
-    // Place food
-    const foodPixel = document.querySelector(`#pixel-${foodPosition.row}-${foodPosition.col}`);
-    foodPixel.className = "food";
-
-    // Place the snake
-    snake.forEach((segment, index) => {
-      const snakePixel = document.querySelector(`#pixel-${segment.row}-${segment.col}`);
-      snakePixel.className = index === 0 ? "snakeHead" : "snakeBodyPixel";
-    });
-  }
-
-  // Handle user input
-  document.addEventListener("keydown", (event) => {
-    switch (event.key) {
-      case "ArrowUp":
-        if (direction !== "down") direction = "up";
-        break;
-      case "ArrowDown":
-        if (direction !== "up") direction = "down";
-        break;
-      case "ArrowLeft":
-        if (direction !== "right") direction = "left";
-        break;
-      case "ArrowRight":
-        if (direction !== "left") direction = "right";
-        break;
+    function createPixel(id, className) {
+      const pixel = document.createElement("div");
+      pixel.className = `pixel ${className}`;
+      pixel.id = `pixel${id}`;
+      return pixel;
     }
-  });
 
-  // Start the game loop
-  function startGame() {
-    gameInterval = setInterval(() => {
-      // Move the snake
-      let newHead;
-      switch (direction) {
+    function renderGame() {
+      gameContainer.innerHTML = "";
+
+      for (let row = 1; row <= gridSize; row++) {
+        for (let col = 1; col <= gridSize; col++) {
+          const pixelId = (row - 1) * gridSize + col;
+          const pixel = createPixel(pixelId, "");
+          gameContainer.appendChild(pixel);
+        }
+      }
+
+      snake.forEach((pixel) => {
+        const pixelId = (pixel.row - 1) * gridSize + pixel.col;
+        const snakePixel = createPixel(pixelId, "snakeBodyPixel");
+        gameContainer.appendChild(snakePixel);
+      });
+
+      const foodPixelId = (food.row - 1) * gridSize + food.col;
+      const foodPixel = createPixel(foodPixelId, "food");
+      gameContainer.appendChild(foodPixel);
+    }
+
+    function moveSnake() {
+      const head = Object.assign({}, snake[0]);
+
+      switch (snakeDirection) {
         case "up":
-          newHead = { row: snake[0].row - 1, col: snake[0].col };
+          head.row--;
           break;
         case "down":
-          newHead = { row: snake[0].row + 1, col: snake[0].col };
+          head.row++;
           break;
         case "left":
-          newHead = { row: snake[0].row, col: snake[0].col - 1 };
+          head.col--;
           break;
         case "right":
-          newHead = { row: snake[0].row, col: snake[0].col + 1 };
+          head.col++;
           break;
       }
 
-      // Check for collisions with the wall or itself
-      if (
-        newHead.row < 1 ||
-        newHead.row > gridSize ||
-        newHead.col < 1 ||
-        newHead.col > gridSize ||
-        snake.some((segment) => positionsAreEqual(segment, newHead))
-      ) {
-        clearInterval(gameInterval);
-        alert("Game Over! Your score: " + score);
-        return;
-      }
+      snake.unshift(head);
 
-      // Check if the snake eats the food
-      if (positionsAreEqual(newHead, foodPosition)) {
-        // Increase the score
-        score += 10;
-        scoreElement.innerText = score;
-
-        // Generate new food position
-        foodPosition = generateRandomPosition();
-
-        // Increase snake speed slightly
-        snakeSpeed *= 0.9;
-        clearInterval(gameInterval);
-        gameInterval = setInterval(startGame, snakeSpeed);
+      if (head.row === food.row && head.col === food.col) {
+        // Snake ate the food
+        score++;
+        scoreElement.textContent = score;
+        generateFood();
       } else {
-        // Remove the tail of the snake
         snake.pop();
       }
 
-      // Move the snake
-      snake.unshift(newHead);
+      renderGame();
 
-      // Update the game grid
-      updateGrid();
-    }, snakeSpeed);
-  }
+      // Check for collisions
+      if (
+        head.row < 1 ||
+        head.row > gridSize ||
+        head.col < 1 ||
+        head.col > gridSize ||
+        checkCollision()
+      ) {
+        alert("Game Over!");
+        resetGame();
+      }
+    }
 
-  // Start the game
-  startGame();
-});
+    function generateFood() {
+      food = {
+        row: Math.floor(Math.random() * gridSize) + 1,
+        col: Math.floor(Math.random() * gridSize) + 1,
+      };
+
+      // Regenerate food if it's on the snake
+      while (checkCollision()) {
+        food = {
+          row: Math.floor(Math.random() * gridSize) + 1,
+          col: Math.floor(Math.random() * gridSize) + 1,
+        };
+      }
+    }
+
+    function checkCollision() {
+      return snake.some(
+        (pixel) => pixel.row === food.row && pixel.col === food.col
+      );
+    }
+
+    function resetGame() {
+      snake = [{ row: 20, col: 1 }];
+      snakeDirection = "up";
+      score = 0;
+      scoreElement.textContent = score;
+      generateFood();
+      renderGame();
+    }
+
+    generateFood();
+    renderGame();
+    setInterval(moveSnake, snakeSpeed);
