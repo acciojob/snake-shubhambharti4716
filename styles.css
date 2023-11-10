@@ -1,26 +1,20 @@
+/* Your CSS Code here. */
 #gameContainer {
-      width: 400px;
-      height: 400px;
-      display: grid;
-      grid-template-columns: repeat(40, 1fr);
-      gap: 1px;
-    }
+	width: 400px;
+	height: 400px;
+	display: grid;
+/* 	background-color: black; */
+	grid-template-columns: repeat(40, 1fr);
+	gap: 1px;
+	border:1px solid black;
+}
+.food{
+	background-color: red;
+}
+.snakeBodyPixel {
+    background-color: green;
+}
 
-    .pixel {
-      width: 10px;
-      height: 10px;
-      background-color: #e0e0e0;
-      border: 1px solid #fff;
-    }
-
-    .food {
-      background-color: #ff6347;
-    }
-
-    .snakeBodyPixel {
-      background-color: #32cd32;
-    }
-
-    .scoreBoard {
-      margin-top: 120px;
-    }
+.scoreBoard {
+    margin-top: 10px;
+}
