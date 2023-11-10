@@ -1,14 +1,10 @@
-// This file is not to be modified. Please ignore this.
-// We will understand all of this later in the course.
-// DO NOT MODIFY THIS FILE
-
-const gameContainer = document.getElementById("gameContainer");
+  const gameContainer = document.getElementById("gameContainer");
     const scoreElement = document.getElementById("score");
 
     const gridSize = 40;
     const pixelSize = 10;
     const snakeSpeed = 100; // milliseconds
-    let snakeDirection = "right";
+    let snakeDirection = "up";
     let snake = [{ row: 20, col: 1 }];
     let food = { row: 0, col: 0 };
     let score = 0;
@@ -109,37 +105,12 @@ const gameContainer = document.getElementById("gameContainer");
 
     function resetGame() {
       snake = [{ row: 20, col: 1 }];
-      snakeDirection = "right";
+      snakeDirection = "up";
       score = 0;
       scoreElement.textContent = score;
       generateFood();
       renderGame();
     }
-
-    document.addEventListener("keydown", (event) => {
-      switch (event.key) {
-        case "ArrowUp":
-          if (snakeDirection !== "down") {
-            snakeDirection = "up";
-          }
-          break;
-        case "ArrowDown":
-          if (snakeDirection !== "up") {
-            snakeDirection = "down";
-          }
-          break;
-        case "ArrowLeft":
-          if (snakeDirection !== "right") {
-            snakeDirection = "left";
-          }
-          break;
-        case "ArrowRight":
-          if (snakeDirection !== "left") {
-            snakeDirection = "right";
-          }
-          break;
-      }
-    });
 
     generateFood();
     renderGame();
